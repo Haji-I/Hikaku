@@ -3,7 +3,7 @@ import { readTags, mp3Duration } from './id3.js';
 import { createPlayer, shuffleArr } from './player.js';
 import * as radio from './radio.js';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 
 // ============================================================ Utilitaires
 const $ = (s, r = document) => r.querySelector(s);
@@ -215,8 +215,8 @@ function stationRow(st, ctx, i) {
 function stationCard(st, ctx, i) {
   return `<div class="card" data-action="play-station" data-sctx="${ctx}" data-i="${i}" data-sid="${esc(st.id)}">${stationLogo(st, 'lg')}<div class="t1">${esc(st.name)}</div><div class="t2">${esc(st.tags || st.country || 'Radio')}</div></div>`;
 }
-function topbar(title, { back = false, right = '' } = {}) {
-  return `<header class="topbar ${back ? 'has-back' : ''}">${back ? `<button class="ib" data-action="back" aria-label="Retour">${icon('back')}</button>` : ''}<h1>${esc(title)}</h1>${right || (back ? '<span class="spacer"></span>' : '')}</header>`;
+function topbar(title, { back = false, right = '', jp = '' } = {}) {
+  return `<header class="topbar ${back ? 'has-back' : ''}">${back ? `<button class="ib" data-action="back" aria-label="Retour">${icon('back')}</button>` : ''}<h1>${esc(title)}${jp ? `<small class="jp">${esc(jp)}</small>` : ''}</h1>${right || (back ? '<span class="spacer"></span>' : '')}</header>`;
 }
 const section = (title, body, link = '') => `<section class="section"><h2>${esc(title)}${link}</h2>${body}</section>`;
 const loadingEl = () => '<div class="loading"><div class="spin"></div></div>';
@@ -256,11 +256,12 @@ function vHome() {
   const L = lib();
   const h = new Date().getHours();
   const hello = h < 5 ? 'Bonne nuit' : h < 18 ? 'Bonjour' : 'Bonsoir';
+  const jp = h >= 5 && h < 11 ? 'おはよう' : h < 18 && h >= 5 ? 'こんにちは' : 'こんばんは';
   const right = `<button class="ib" data-action="nav" data-to="#/settings" aria-label="Réglages">${icon('tune')}</button>`;
   const sys = L.tracks.length
     ? `« Rapport » Analyse terminée : ${plural(L.tracks.length, 'titre')}, ${plural(L.albums.length, 'album')}.`
     : '« Avis » Aucune musique détectée. En attente d’import.';
-  let html = topbar(hello, { right }) + `<div class="sys-line" data-type="${esc(sys)}"></div>` + installBanner();
+  let html = topbar(hello, { right, jp }) + `<div class="sys-line" data-type="${esc(sys)}"></div>` + installBanner();
 
   if (!L.tracks.length) {
     html += `<div class="empty"><div class="big">${icon('note')}</div><h2>Ta musique, partout</h2>
@@ -372,7 +373,7 @@ function vLibrary() {
   const L = lib();
   const tab = S.ui.libTab;
   const right = `<button class="ib" data-action="import" aria-label="Importer des MP3">${icon('upload')}</button>`;
-  let html = topbar('Bibliothèque', { right });
+  let html = topbar('Bibliothèque', { right, jp: 'ライブラリ' });
   html += `<div class="chips">${[['songs', 'Titres'], ['albums', 'Albums'], ['artists', 'Artistes'], ['playlists', 'Playlists']]
     .map(([k, l]) => `<button class="chip ${tab === k ? 'on' : ''}" data-action="lib-tab" data-tab="${k}">${l}</button>`).join('')}</div>`;
 
@@ -466,7 +467,7 @@ function vPlaylist(id) {
 function vRadio() {
   const tab = S.ui.radioTab;
   const right = `<button class="ib" data-action="add-stream" aria-label="Ajouter un flux">${icon('plus')}</button>`;
-  let html = topbar('Radio', { right });
+  let html = topbar('Radio', { right, jp: 'ラジオ' });
   html += `<div class="chips">${[['top', 'Populaires'], ['genres', 'Genres'], ['favs', 'Mes radios'], ['search', 'Rechercher']]
     .map(([k, l]) => `<button class="chip ${tab === k ? 'on' : ''}" data-action="radio-tab" data-tab="${k}">${l}</button>`).join('')}</div>`;
 
@@ -547,12 +548,9 @@ async function fetchRadio(key, loader) {
 function vSettings() {
   const L = lib();
   const th = theme();
-  const html = topbar('Réglages', { back: true }) + `<div class="settings">
+  const html = topbar('Réglages', { back: true, jp: '設定' }) + `<div class="settings">
     <div class="card-box"><h3>Apparence</h3>
-      <div class="theme-pick">
-        <button class="${th === 'sage' ? 'on' : ''}" data-action="set-theme" data-theme-id="sage"><span class="sw" style="background:radial-gradient(circle at 70% 40%,#4fe3ff,#0b3a6e 45%,#040a16)"></span><b>Sage</b><small>Holographique bleu</small></button>
-        <button class="${th === 'classic' ? 'on' : ''}" data-action="set-theme" data-theme-id="classic"><span class="sw" style="background:linear-gradient(135deg,#7b6cff,#ff6fae)"></span><b>Classique</b><small>Violet et rose</small></button>
-      </div>
+      <div class="theme-pick">${THEMES.map((t) => `<button class="${th === t.id ? 'on' : ''}" data-action="set-theme" data-theme-id="${t.id}"><span class="sw" style="background:${t.sw}"></span><b>${t.name}</b><small>${t.sub}</small></button>`).join('')}</div>
       <p>Fond d’écran : mets l’image de ton choix (ton perso préféré, un fond d’anime…). Elle reste sur ton téléphone.</p>
       <div class="stack" style="align-items:flex-start;flex-direction:row;flex-wrap:wrap"><button class="btn" data-action="wallpaper">${icon('upload')}Choisir une image</button>
       ${S.hasWall ? `<button class="btn danger" data-action="wallpaper-remove">${icon('close')}Retirer</button>` : ''}</div></div>
@@ -1410,12 +1408,22 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) playe
 window.addEventListener('pagehide', () => player.save());
 
 // ============================================================ Thème & fond d'écran
-function theme() { return document.documentElement.dataset.theme === 'classic' ? 'classic' : 'sage'; }
+const THEMES = [
+  { id: 'manga', name: 'Manga', sub: 'Noir & blanc, trames', color: '#f6f3ea', sw: 'radial-gradient(circle,#111 1.2px,transparent 1.6px) 0 0/6px 6px,#fff;border:2px solid #111' },
+  { id: 'classic', name: 'Normal', sub: 'La 1re version', color: '#0b0b10', sw: 'linear-gradient(135deg,#7b6cff,#ff6fae)' },
+  { id: 'jpop', name: 'J-pop', sub: 'Pastel & kawaii', color: '#fff5fb', sw: 'linear-gradient(135deg,#ff7ac6,#b388ff 52%,#62d6ff)' },
+  { id: 'sage', name: 'Sage', sub: 'Holographique bleu', color: '#040a16', sw: 'radial-gradient(circle at 70% 40%,#4fe3ff,#0b3a6e 45%,#040a16)' },
+];
+function theme() {
+  const t = document.documentElement.dataset.theme;
+  return THEMES.some((x) => x.id === t) ? t : 'manga';
+}
 function setTheme(t) {
-  document.documentElement.dataset.theme = t;
-  try { localStorage.setItem('hikaku-theme', t); } catch {}
-  $('meta[name=theme-color]').setAttribute('content', t === 'sage' ? '#040a16' : '#0b0b10');
-  toast(t === 'sage' ? 'Thème Sage activé' : 'Thème Classique activé', false, 'rapport');
+  const def = THEMES.find((x) => x.id === t) || THEMES[0];
+  document.documentElement.dataset.theme = def.id;
+  try { localStorage.setItem('hikaku-theme', def.id); } catch {}
+  $('meta[name=theme-color]').setAttribute('content', def.color);
+  toast(`Thème ${def.name} activé`, false, 'rapport');
 }
 
 let wallUrl = null;
@@ -1475,6 +1483,8 @@ wallInput.addEventListener('change', async () => {
     `<svg class="ring ring-a" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="96"/><circle cx="100" cy="100" r="90" stroke-dasharray="1.2 3"/><circle cx="100" cy="100" r="86"/>${ticks}${glyphs}</svg>` +
     `<svg class="ring ring-b" viewBox="0 0 200 200" aria-hidden="true"><path d="${sq}"/><circle cx="100" cy="100" r="76"/>${dots}</svg>`);
 })();
+
+$('meta[name=theme-color]').setAttribute('content', (THEMES.find((x) => x.id === theme()) || THEMES[0]).color);
 
 // ============================================================ Démarrage
 async function boot() {

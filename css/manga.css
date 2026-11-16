@@ -1,0 +1,184 @@
+/* =====================================================================
+   Thème « Manga » : papier, encre noire, trames, cases, bulles
+   et onomatopées. Design original.
+   ===================================================================== */
+[data-theme="manga"] {
+  --bg: #f6f3ea;
+  --bg2: #fffdf7;
+  --surface: #ffffff;
+  --surface2: #ebe6d8;
+  --line: rgba(0, 0, 0, .18);
+  --text: #111;
+  --muted: #5a5a5a;
+  --accent: #e60012;
+  --accent2: #e60012;
+  --danger: #e60012;
+  --ink: #111;
+  --display: 'Dela Gothic One', 'Arial Black', Impact, sans-serif;
+  --tone: radial-gradient(circle, rgba(0, 0, 0, .16) 1px, transparent 1.5px) 0 0 / 6px 6px;
+  color-scheme: light;
+  background: #f6f3ea;
+}
+[data-theme="manga"] body { background: radial-gradient(circle, rgba(0, 0, 0, .06) 1px, transparent 1.4px) 0 0 / 7px 7px, #f6f3ea; }
+[data-theme="manga"] body.has-wall { background: transparent; }
+[data-theme="manga"] #wall::after { background: linear-gradient(180deg, rgba(246, 243, 234, .55), rgba(246, 243, 234, .82)); }
+[data-theme="manga"] body.has-wall #wall { opacity: .55; filter: grayscale(1) contrast(1.2); }
+
+/* ---------- Barres, titres */
+[data-theme="manga"] .topbar { background: rgba(246, 243, 234, .95); -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom: 3px solid var(--ink); }
+[data-theme="manga"] .topbar h1 { font-family: var(--display); font-weight: 400; font-size: 26px; letter-spacing: .01em; }
+[data-theme="manga"] .topbar.has-back h1 { font-size: 17px; }
+[data-theme="manga"] .jp { display: inline-block; margin-left: 10px; vertical-align: 5px; font-family: var(--display); font-size: 11px; font-weight: 400; color: #fff; background: var(--ink); padding: 3px 7px; transform: skew(-10deg); letter-spacing: .05em; }
+[data-theme="manga"] .ib { color: var(--ink); }
+[data-theme="manga"] .ib:active { background: rgba(0, 0, 0, .08); }
+[data-theme="manga"] .section h2 { justify-content: flex-start; gap: 10px; font-family: var(--display); font-weight: 400; font-size: 19px; border-left: 7px solid var(--accent); padding-left: 10px; margin-left: 16px; }
+[data-theme="manga"] .section h2 a, [data-theme="manga"] .section h2 button { margin-left: auto; font-family: -apple-system, sans-serif; font-weight: 800; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+[data-theme="manga"] .t1 { font-weight: 700; }
+[data-theme="manga"] .card .t1 { font-weight: 800; }
+[data-theme="manga"] .hero h1 { font-family: var(--display); font-weight: 400; font-size: 26px; }
+[data-theme="manga"] .hero .sub { color: var(--muted); font-weight: 600; }
+[data-theme="manga"] .note { color: var(--muted); font-weight: 600; }
+
+/* ---------- Pochettes = cases de manga */
+[data-theme="manga"] .cv { border: 2.5px solid var(--ink); border-radius: 2px; background-color: #fff; }
+[data-theme="manga"] .cv.lg { box-shadow: 4px 4px 0 var(--ink); }
+[data-theme="manga"] .cv.xl { box-shadow: 6px 6px 0 var(--ink); border-width: 3px; }
+[data-theme="manga"] .cv.round { border-radius: 50%; }
+[data-theme="manga"] .cv.ph { background: var(--tone), #fff; color: var(--ink); }
+[data-theme="manga"] .cv.auto { background: radial-gradient(circle, rgba(255, 255, 255, .22) 1px, transparent 1.5px) 0 0 / 6px 6px, var(--ink); color: #fff; }
+[data-theme="manga"] .cv.logo { background: #fff; }
+[data-theme="manga"] .carousel { padding-bottom: 8px; }
+
+/* ---------- Lignes */
+[data-theme="manga"] .row:active { background: var(--surface2); }
+[data-theme="manga"] .row.playing .t1 { color: var(--accent); }
+[data-theme="manga"] .row.playing { background: linear-gradient(90deg, rgba(230, 0, 18, .07), transparent 70%); }
+[data-theme="manga"] .row.current { background: rgba(230, 0, 18, .08); box-shadow: inset 4px 0 0 var(--accent); }
+[data-theme="manga"] .eq i { background: var(--accent); }
+
+/* ---------- Puces et boutons */
+[data-theme="manga"] .chip { background: #fff; border: 2px solid var(--ink); color: var(--ink); font-weight: 700; }
+[data-theme="manga"] .chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+[data-theme="manga"] .btn { background: #fff; color: var(--ink); border: 2.5px solid var(--ink); border-radius: 4px; box-shadow: 3px 3px 0 var(--ink); font-weight: 800; }
+[data-theme="manga"] .btn:active { opacity: 1; transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+[data-theme="manga"] .btn.primary { background: var(--ink); color: #fff; box-shadow: 3px 3px 0 var(--accent); }
+[data-theme="manga"] .btn.danger { background: #fff; color: var(--accent); border-color: var(--accent); box-shadow: 3px 3px 0 var(--accent); }
+[data-theme="manga"] select.sort { background: #fff; border: 2px solid var(--ink); color: var(--ink); font-weight: 700; }
+[data-theme="manga"] .searchbox { background: #fff; border: 2.5px solid var(--ink); border-radius: 999px; }
+[data-theme="manga"] .searchbox .i { color: var(--ink); }
+
+/* ---------- Carte « Mix du jour » : case avec lignes de vitesse */
+[data-theme="manga"] .mix { background: #fff; color: var(--ink); border: 3px solid var(--ink); border-radius: 3px; box-shadow: 5px 5px 0 var(--ink); }
+[data-theme="manga"] .mix::after {
+  inset: 0; right: 0; top: 0; width: auto; height: auto; border-radius: 0;
+  background: repeating-conic-gradient(from 0deg at 82% 50%, var(--ink) 0deg 1.4deg, transparent 1.4deg 7deg);
+  -webkit-mask-image: linear-gradient(90deg, transparent 38%, #000 80%);
+  mask-image: linear-gradient(90deg, transparent 38%, #000 80%);
+  opacity: .9;
+}
+[data-theme="manga"] .mix::before {
+  content: "ドン!"; position: absolute; z-index: 2; right: 92px; top: 4px;
+  font-family: var(--display); font-size: 22px; color: var(--accent); transform: rotate(-12deg);
+  text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
+}
+[data-theme="manga"] .mix .meta { background: #fff; padding: 2px 8px 4px 0; }
+[data-theme="manga"] .mix h3 { font-family: var(--display); font-weight: 400; font-size: 25px; }
+[data-theme="manga"] .mix p { color: #333; font-weight: 700; opacity: 1; }
+[data-theme="manga"] .mix .play { background: var(--ink); color: #fff; box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--ink); }
+[data-theme="manga"] .banner { background: #fff; border: 2.5px solid var(--ink); border-radius: 18px; color: #333; }
+[data-theme="manga"] .banner b { color: var(--ink); }
+
+/* ---------- Vide / chargement */
+[data-theme="manga"] .empty .big { background: var(--tone), #fff; color: var(--ink); border: 3px solid var(--ink); border-radius: 50%; box-shadow: 4px 4px 0 var(--ink); }
+[data-theme="manga"] .empty h2 { font-family: var(--display); font-weight: 400; }
+[data-theme="manga"] .empty p { font-weight: 600; }
+[data-theme="manga"] .spin { border-color: rgba(0, 0, 0, .14); border-top-color: var(--ink); }
+
+/* ---------- Mini lecteur & onglets */
+[data-theme="manga"] #mini { background: #fff; border: 2.5px solid var(--ink); border-radius: 6px; box-shadow: 4px 4px 0 var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+[data-theme="manga"] #mini .prog { background: rgba(0, 0, 0, .12); }
+[data-theme="manga"] #mini .prog i { background: var(--accent); }
+[data-theme="manga"] #mini .mini-cv .cv { border-width: 2px; }
+[data-theme="manga"] #tabbar { background: #fff; border-top: 3px solid var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+[data-theme="manga"] #tabbar a { position: relative; color: #888; font-weight: 700; }
+[data-theme="manga"] #tabbar a.on { color: var(--ink); }
+[data-theme="manga"] #tabbar a.on::after { content: ""; position: absolute; bottom: 4px; left: 34%; right: 34%; height: 3px; background: var(--accent); }
+
+/* ---------- Lecteur plein écran : lignes de vitesse et onomatopées */
+[data-theme="manga"] #np { background: #fff; }
+[data-theme="manga"] #np::before {
+  background: repeating-conic-gradient(from 0deg at 50% 36%, rgba(0, 0, 0, .11) 0deg 1.3deg, transparent 1.3deg 6deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 36%, transparent 28%, #000 62%);
+  mask-image: radial-gradient(circle at 50% 36%, transparent 28%, #000 62%);
+}
+[data-theme="manga"] .np-bg { display: none; }
+[data-theme="manga"] .np-head .ib { color: var(--ink); }
+[data-theme="manga"] .np-src { color: var(--ink); font-weight: 800; letter-spacing: .08em; background: #fff; }
+[data-theme="manga"] .np-cover > .cv { border: 3.5px solid var(--ink); border-radius: 2px; box-shadow: 7px 7px 0 var(--ink); transform: rotate(-2deg); }
+[data-theme="manga"] .np-deco { display: block; }
+[data-theme="manga"] .np-deco .sfx { display: block; }
+[data-theme="manga"] .np-title { font-family: var(--display); font-weight: 400; font-size: 25px; }
+[data-theme="manga"] .np-artist { color: #444; font-weight: 700; }
+[data-theme="manga"] .np-times { color: #333; font-weight: 700; }
+[data-theme="manga"] .np-live { color: var(--accent); font-weight: 800; }
+[data-theme="manga"] .np-live .dot { background: var(--accent); }
+[data-theme="manga"] input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; border: 2px solid var(--ink); background: linear-gradient(to right, var(--accent) var(--p, 0%), #fff var(--p, 0%)); }
+[data-theme="manga"] input[type=range]::-webkit-slider-thumb { width: 18px; height: 18px; margin-top: -8px; background: var(--ink); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink); }
+[data-theme="manga"] input[type=range]::-moz-range-track { height: 6px; border: 2px solid var(--ink); background: linear-gradient(to right, var(--accent) var(--p, 0%), #fff var(--p, 0%)); }
+[data-theme="manga"] .np-ctrl .ib { color: var(--ink); }
+[data-theme="manga"] .np-ctrl .ib.on { color: var(--accent); }
+[data-theme="manga"] .np-ctrl .ib.on::after { background: var(--accent); }
+[data-theme="manga"] .np-ctrl .big { background: var(--ink); color: #fff; box-shadow: 4px 4px 0 var(--accent); }
+[data-theme="manga"] .np-tools button { color: #333; font-weight: 700; }
+[data-theme="manga"] .np-tools button.on { color: var(--accent); }
+[data-theme="manga"] .np-tools button:active { background: rgba(0, 0, 0, .06); }
+[data-theme="manga"] .np-panel { background: #fff; border-top: 3px solid var(--ink); box-shadow: 0 -4px 0 rgba(0, 0, 0, .08); }
+[data-theme="manga"] .panel-head { border-bottom: 2px solid var(--ink); }
+[data-theme="manga"] .panel-head h3 { font-family: var(--display); font-weight: 400; }
+[data-theme="manga"] .lyrics { font-weight: 800; }
+
+/* Onomatopées autour de la pochette */
+[data-theme="manga"] .sfx {
+  position: absolute; z-index: 2; font-family: var(--display); line-height: 1; pointer-events: none;
+  text-shadow: 3px 3px 0 #fff, -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff, 0 -3px 0 #fff, -3px 0 0 #fff;
+}
+[data-theme="manga"] .sfx-1 { top: -4%; right: -2%; font-size: clamp(26px, 9vw, 40px); color: var(--ink); transform: rotate(12deg); }
+[data-theme="manga"] .sfx-2 { bottom: 2%; left: -3%; font-size: clamp(22px, 7vw, 32px); color: var(--accent); transform: rotate(-10deg); }
+[data-theme="manga"] body:not(.paused) .sfx-1 { animation: manga-shake .5s steps(2) infinite; }
+[data-theme="manga"] body:not(.paused) .sfx-2 { animation: manga-hop 1.2s ease-in-out infinite; }
+[data-theme="manga"] body.paused .sfx { opacity: .35; }
+@keyframes manga-shake { 50% { transform: rotate(12deg) translate(2px, -2px); } }
+@keyframes manga-hop { 50% { transform: rotate(-10deg) translateY(-6px); } }
+
+/* ---------- Feuilles, fenêtres, bulles */
+[data-theme="manga"] .sheet { background: #fff; border: 3px solid var(--ink); border-bottom: 0; border-radius: 16px 16px 0 0; }
+[data-theme="manga"] .sheet .grip { background: var(--ink); }
+[data-theme="manga"] .sheet .head { border-bottom: 2px solid var(--ink); }
+[data-theme="manga"] .sheet .item { font-weight: 700; }
+[data-theme="manga"] .sheet .item .i { color: var(--ink); }
+[data-theme="manga"] .sheet .item:active { background: var(--surface2); }
+[data-theme="manga"] .sheet-bd, [data-theme="manga"] .modal-wrap { background: rgba(0, 0, 0, .45); }
+[data-theme="manga"] .modal { background: #fff; border: 3px solid var(--ink); border-radius: 6px; box-shadow: 6px 6px 0 var(--ink); }
+[data-theme="manga"] .modal h3 { font-family: var(--display); font-weight: 400; }
+[data-theme="manga"] .modal p { color: #444; }
+[data-theme="manga"] .field span { color: #333; font-weight: 700; }
+[data-theme="manga"] .field input, [data-theme="manga"] .field textarea { background: #fff; border: 2px solid var(--ink); border-radius: 4px; color: var(--ink); }
+[data-theme="manga"] .field input:focus, [data-theme="manga"] .field textarea:focus { border-color: var(--accent); }
+[data-theme="manga"] #toast {
+  overflow: visible; white-space: normal; text-align: center; width: max-content; max-width: min(88vw, 380px);
+  background: #fff; color: var(--ink); border: 2.5px solid var(--ink); border-radius: 24px; padding: 10px 18px;
+  font-weight: 800; box-shadow: 3px 3px 0 var(--ink);
+}
+[data-theme="manga"] #toast::before, [data-theme="manga"] #toast::after { content: ""; position: absolute; left: 30px; border: 10px solid transparent; border-bottom: 0; }
+[data-theme="manga"] #toast::before { bottom: -13px; border-top-color: var(--ink); }
+[data-theme="manga"] #toast::after { bottom: -9px; left: 31px; border-width: 9px 9px 0; border-top-color: #fff; }
+
+/* ---------- Réglages */
+[data-theme="manga"] .card-box { background: #fff; border: 2.5px solid var(--ink); border-radius: 4px; box-shadow: 4px 4px 0 var(--ink); }
+[data-theme="manga"] .card-box h3 { font-family: var(--display); font-weight: 400; }
+[data-theme="manga"] .card-box p, [data-theme="manga"] .card-box li { color: #444; }
+[data-theme="manga"] .meter { background: #fff; border: 2px solid var(--ink); border-radius: 2px; }
+[data-theme="manga"] .meter i { background: var(--tone), var(--accent); }
+[data-theme="manga"] .theme-pick button { background: #fff; border: 2px solid var(--ink); border-radius: 4px; }
+[data-theme="manga"] .theme-pick button.on { box-shadow: 4px 4px 0 var(--accent); border-color: var(--ink); }
+[data-theme="manga"] .i.tiny, [data-theme="manga"] .banner .i.share { fill: var(--accent); }
