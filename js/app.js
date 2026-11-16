@@ -2,8 +2,9 @@ import * as db from './db.js';
 import { readTags, mp3Duration } from './id3.js';
 import { createPlayer, shuffleArr } from './player.js';
 import * as radio from './radio.js';
+import { isZip, listZip, readZipEntry } from './zip.js';
 
-const VERSION = '1.2.0';
+const VERSION = '1.3.0';
 
 // ============================================================ Utilitaires
 const $ = (s, r = document) => r.querySelector(s);
@@ -266,6 +267,7 @@ function vHome() {
   if (!L.tracks.length) {
     html += `<div class="empty"><div class="big">${icon('note')}</div><h2>Ta musique, partout</h2>
       <p>Importe tes MP3 depuis l’app Fichiers (iCloud Drive, Téléchargements…) ou écoute la radio en direct.</p>
+      <p class="tip">Astuce : pour tout importer d’un coup, dans Fichiers garde le doigt sur ton dossier de musique → <b>Compresser</b>, puis importe le <b>.zip</b>.</p>
       <div class="stack"><button class="btn primary" data-action="import">${icon('upload')}Importer des MP3</button>
       <button class="btn" data-action="nav" data-to="#/radio">${icon('radio')}Écouter la radio</button></div></div>`;
     return html + homeRadio();
@@ -389,6 +391,7 @@ function vLibrary() {
   if (!L.tracks.length) {
     return html + `<div class="empty"><div class="big">${icon('upload')}</div><h2>Aucun titre</h2>
       <p>Touche le bouton ci-dessous et choisis tes MP3 dans l’app Fichiers. Tu peux en sélectionner plusieurs d’un coup.</p>
+      <p class="tip">Plus rapide : dans Fichiers, garde le doigt sur ton dossier de musique → <b>Compresser</b>, puis importe le <b>.zip</b> : tout le dossier est ajouté d’un coup.</p>
       <button class="btn primary" data-action="import">${icon('upload')}Importer des MP3</button></div>`;
   }
   if (tab === 'albums') {
@@ -556,8 +559,8 @@ function vSettings() {
       ${S.hasWall ? `<button class="btn danger" data-action="wallpaper-remove">${icon('close')}Retirer</button>` : ''}</div></div>
     <div class="card-box"><h3>Stockage</h3><div id="storage"><p>Calcul…</p></div>
       <button class="btn" data-action="persist">Protéger mes fichiers</button></div>
-    <div class="card-box"><h3>Bibliothèque</h3><p>${plural(L.tracks.length, 'titre')}, ${plural(L.albums.length, 'album')}, ${plural(S.playlists.length, 'playlist')}.</p>
-      <div class="stack" style="align-items:flex-start"><button class="btn primary" data-action="import">${icon('upload')}Importer des MP3</button>
+    <div class="card-box"><h3>Bibliothèque</h3><p>Pour importer tout un dossier : dans l’app Fichiers, garde le doigt sur le dossier → <b>Compresser</b>, puis importe le fichier .zip obtenu.</p><p>${plural(L.tracks.length, 'titre')}, ${plural(L.albums.length, 'album')}, ${plural(S.playlists.length, 'playlist')}.</p>
+      <div class="stack" style="align-items:flex-start"><button class="btn primary" data-action="import">${icon('upload')}Importer des MP3 ou un .zip</button>
       <button class="btn danger" data-action="wipe">${icon('delete')}Tout effacer</button></div></div>
     <div class="card-box"><h3>Écouter en arrière-plan</h3><ol>
       <li>Ouvre Hikaku <b>depuis l’icône de l’écran d’accueil</b> (pas depuis Safari).</li>
@@ -1280,18 +1283,32 @@ async function importOne(f) {
   return t;
 }
 
-async function importFiles(files) {
-  files = [...files].filter((f) => f.type.startsWith('audio/') || MIME[extOf(f.name)]);
-  if (!files.length) { toast('Aucun fichier audio sélectionné', false, 'alerte'); return; }
+async function importFiles(input) {
+  const isAudio = (name, type = '') => type.startsWith('audio/') || !!MIME[extOf(name)];
+  // Chaque source sait se transformer en fichier au moment voulu (les .zip sont lus morceau par morceau)
+  const files = [];
+  let zipErr = null;
+  for (const f of [...input]) {
+    if (isZip(f)) {
+      try {
+        const entries = await listZip(f);
+        for (const e of entries) {
+          if (isAudio(e.name)) files.push({ name: e.name, size: e.usize, get: () => readZipEntry(f, e, MIME[extOf(e.name)] || '') });
+        }
+      } catch (e) { zipErr = e; }
+    } else if (isAudio(f.name, f.type)) files.push({ name: f.name, size: f.size, get: async () => f });
+  }
+  if (!files.length) { toast(zipErr ? zipErr.message : 'Aucun fichier audio trouvé', false, 'alerte'); return; }
   navigator.storage?.persist?.().catch(() => {});
   const seen = new Set([...S.tracks.values()].map((t) => t.fileName + '|' + t.size));
   let added = 0, skipped = 0, failed = 0;
   const tt = toast(`Import… 0/${files.length}`, true);
   for (let i = 0; i < files.length; i++) {
-    const f = files[i];
-    tt.update(`Import ${i + 1}/${files.length} • ${f.name}`);
-    if (seen.has(f.name + '|' + f.size)) { skipped++; continue; }
+    const src = files[i];
+    tt.update(`Import ${i + 1}/${files.length} • ${src.name}`);
+    if (seen.has(src.name + '|' + src.size)) { skipped++; continue; }
     try {
+      const f = await src.get();
       await importOne(f);
       seen.add(f.name + '|' + f.size);
       added++;

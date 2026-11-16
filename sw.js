@@ -1,8 +1,8 @@
 // Service worker : l'appli s'ouvre même sans réseau.
-const VERSION = 'hikaku-1.2.0';
+const VERSION = 'hikaku-1.3.0';
 const SHELL = [
   './', 'index.html', 'css/style.css', 'css/sage.css', 'css/manga.css', 'css/jpop.css',
-  'js/app.js', 'js/db.js', 'js/id3.js', 'js/player.js', 'js/radio.js',
+  'js/app.js', 'js/db.js', 'js/id3.js', 'js/player.js', 'js/radio.js', 'js/zip.js',
   'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
 ];
 

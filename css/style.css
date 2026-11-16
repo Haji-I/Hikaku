@@ -334,3 +334,6 @@ body.has-wall #wall { opacity: .38; }
 .theme-pick .sw { display: block; height: 34px; border-radius: 8px; margin-bottom: 8px; }
 .theme-pick b { display: block; font-size: 15px; }
 .theme-pick small { color: var(--muted); font-size: 12px; }
+
+.empty p.tip { font-size: 13px; margin-top: -8px; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.empty p.tip b { color: var(--text); }

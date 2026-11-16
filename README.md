@@ -5,7 +5,8 @@ avec **lecture en arrière-plan** et contrôles sur l’écran verrouillé.
 
 ## Fonctions
 
-- **Import de MP3** depuis l’app Fichiers (iCloud Drive, Téléchargements…), plusieurs d’un coup.
+- **Import de MP3** depuis l’app Fichiers (iCloud Drive, Téléchargements…), plusieurs d’un coup,
+  ou **un dossier entier en .zip** (Fichiers → appui long sur le dossier → Compresser).
   Titre, artiste, album, n° de piste, pochette et paroles sont lus automatiquement dans les tags.
 - **Lecture en arrière-plan**, écran verrouillé, Centre de contrôle (lecture/pause, suivant/précédent, barre de progression).
 - Accueil : **Mix du jour**, écoutés récemment, tes préférés, ajoutés récemment, albums, tes radios.
