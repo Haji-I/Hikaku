@@ -3,7 +3,7 @@ import { readTags, mp3Duration } from './id3.js';
 import { createPlayer, shuffleArr } from './player.js';
 import * as radio from './radio.js';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 
 // ============================================================ Utilitaires
 const $ = (s, r = document) => r.querySelector(s);
@@ -257,7 +257,10 @@ function vHome() {
   const h = new Date().getHours();
   const hello = h < 5 ? 'Bonne nuit' : h < 18 ? 'Bonjour' : 'Bonsoir';
   const right = `<button class="ib" data-action="nav" data-to="#/settings" aria-label="Réglages">${icon('tune')}</button>`;
-  let html = topbar(hello, { right }) + installBanner();
+  const sys = L.tracks.length
+    ? `« Rapport » Analyse terminée : ${plural(L.tracks.length, 'titre')}, ${plural(L.albums.length, 'album')}.`
+    : '« Avis » Aucune musique détectée. En attente d’import.';
+  let html = topbar(hello, { right }) + `<div class="sys-line" data-type="${esc(sys)}"></div>` + installBanner();
 
   if (!L.tracks.length) {
     html += `<div class="empty"><div class="big">${icon('note')}</div><h2>Ta musique, partout</h2>
@@ -543,7 +546,16 @@ async function fetchRadio(key, loader) {
 
 function vSettings() {
   const L = lib();
+  const th = theme();
   const html = topbar('Réglages', { back: true }) + `<div class="settings">
+    <div class="card-box"><h3>Apparence</h3>
+      <div class="theme-pick">
+        <button class="${th === 'sage' ? 'on' : ''}" data-action="set-theme" data-theme-id="sage"><span class="sw" style="background:radial-gradient(circle at 70% 40%,#4fe3ff,#0b3a6e 45%,#040a16)"></span><b>Sage</b><small>Holographique bleu</small></button>
+        <button class="${th === 'classic' ? 'on' : ''}" data-action="set-theme" data-theme-id="classic"><span class="sw" style="background:linear-gradient(135deg,#7b6cff,#ff6fae)"></span><b>Classique</b><small>Violet et rose</small></button>
+      </div>
+      <p>Fond d’écran : mets l’image de ton choix (ton perso préféré, un fond d’anime…). Elle reste sur ton téléphone.</p>
+      <div class="stack" style="align-items:flex-start;flex-direction:row;flex-wrap:wrap"><button class="btn" data-action="wallpaper">${icon('upload')}Choisir une image</button>
+      ${S.hasWall ? `<button class="btn danger" data-action="wallpaper-remove">${icon('close')}Retirer</button>` : ''}</div></div>
     <div class="card-box"><h3>Stockage</h3><div id="storage"><p>Calcul…</p></div>
       <button class="btn" data-action="persist">Protéger mes fichiers</button></div>
     <div class="card-box"><h3>Bibliothèque</h3><p>${plural(L.tracks.length, 'titre')}, ${plural(L.albums.length, 'album')}, ${plural(S.playlists.length, 'playlist')}.</p>
@@ -600,7 +612,26 @@ function render(keepScroll = true) {
   $$('#tabbar a').forEach((a) => a.classList.toggle('on', a.dataset.tab === TAB_OF[name]));
   if (keepScroll) window.scrollTo(0, y);
   after?.();
+  typeSysLine();
   markPlaying();
+}
+
+// Ligne « système » tapée lettre par lettre (thème Sage)
+let typedOnce = false;
+let typeT = 0;
+function typeSysLine() {
+  const el = $('.sys-line');
+  if (!el) return;
+  const full = el.dataset.type;
+  clearInterval(typeT);
+  if (typedOnce || theme() !== 'sage' || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = full; return; }
+  typedOnce = true;
+  let i = 0;
+  typeT = setInterval(() => {
+    i += 1;
+    el.textContent = full.slice(0, i);
+    if (i >= full.length) clearInterval(typeT);
+  }, 22);
 }
 
 window.addEventListener('hashchange', () => {
@@ -663,7 +694,7 @@ function renderPlayer() {
   $('#mini-cv').innerHTML = cover;
   $('#mini-title').textContent = title;
   $('#mini-sub').textContent = sub;
-  $('#np-art').innerHTML = coverBig;
+  $('#np-cover').innerHTML = coverBig;
   $('#np-title').textContent = title;
   $('#np-artist').textContent = sub;
   const bgEl = $('#np-bg');
@@ -736,7 +767,7 @@ player.addEventListener('state', () => { renderState(); markPlaying(); });
 player.addEventListener('time', renderTime);
 player.addEventListener('queue', () => { if (panel === 'queue') renderQueue(); });
 player.addEventListener('sleep', renderSleep);
-player.addEventListener('message', (e) => toast(e.detail));
+player.addEventListener('message', (e) => toast(e.detail, false, /impossible|répond|introuvable/i.test(e.detail) ? 'alerte' : 'rapport'));
 player.addEventListener('buffer', (e) => npEl.classList.toggle('buffering', !!e.detail));
 
 function openNP() {
@@ -864,13 +895,15 @@ const field = (name, label, value = '', type = 'text', extra = '') =>
 const confirmBox = (title, text, ok, fn) => modal({ title, body: `<p>${esc(text)}</p>`, ok, danger: true, onOk: fn });
 
 let toastT = 0;
-function toast(msg, sticky = false) {
+const TAGS = { avis: 'Avis', rapport: 'Rapport', alerte: 'Alerte' };
+function toast(msg, sticky = false, kind = 'avis') {
   const el = $('#toast');
-  el.textContent = msg;
+  const set = (m) => { el.innerHTML = `<span class="toast-tag ${kind}">« ${TAGS[kind] || 'Avis'} »</span>${esc(m)}`; };
+  set(msg);
   el.classList.add('show');
   clearTimeout(toastT);
-  if (!sticky) toastT = setTimeout(() => el.classList.remove('show'), 2600);
-  return { update: (m) => (el.textContent = m), close: () => { el.classList.remove('show'); } };
+  if (!sticky) toastT = setTimeout(() => el.classList.remove('show'), 2800);
+  return { update: set, close: () => { el.classList.remove('show'); } };
 }
 
 // Image cassée (logo de radio…) -> vignette de remplacement
@@ -1251,7 +1284,7 @@ async function importOne(f) {
 
 async function importFiles(files) {
   files = [...files].filter((f) => f.type.startsWith('audio/') || MIME[extOf(f.name)]);
-  if (!files.length) { toast('Aucun fichier audio sélectionné'); return; }
+  if (!files.length) { toast('Aucun fichier audio sélectionné', false, 'alerte'); return; }
   navigator.storage?.persist?.().catch(() => {});
   const seen = new Set([...S.tracks.values()].map((t) => t.fileName + '|' + t.size));
   let added = 0, skipped = 0, failed = 0;
@@ -1268,7 +1301,7 @@ async function importFiles(files) {
     } catch (e) {
       console.error(e);
       failed++;
-      if (e?.name === 'QuotaExceededError') { toast('Stockage plein : libère de la place sur ton iPhone'); break; }
+      if (e?.name === 'QuotaExceededError') { toast('Stockage plein : libère de la place sur ton iPhone', false, 'alerte'); break; }
     }
   }
   bump();
@@ -1277,7 +1310,7 @@ async function importFiles(files) {
   if (skipped) parts.push(`${skipped} déjà présent${skipped > 1 ? 's' : ''}`);
   if (failed) parts.push(`${failed} en échec`);
   tt.close();
-  toast(parts.join(' • '));
+  toast(parts.join(' • '), false, 'rapport');
 }
 
 $('#file-input').addEventListener('change', (e) => {
@@ -1340,6 +1373,9 @@ const A = {
   'q-up'(el) { const i = +el.dataset.i; player.move(i, i - 1); },
   'q-down'(el) { const i = +el.dataset.i; player.move(i, i + 1); },
   'q-remove'(el) { player.removeAt(+el.dataset.i); },
+  'set-theme'(el) { setTheme(el.dataset.themeId); render(); },
+  wallpaper() { $('#wall-input').click(); },
+  async 'wallpaper-remove'() { await db.del('kv', 'wallpaper'); applyWallpaper(null); render(); toast('Fond d’écran retiré'); },
   async persist() {
     const ok = await navigator.storage?.persist?.();
     toast(ok ? 'Fichiers protégés' : 'iOS a refusé : installe d’abord l’appli sur l’écran d’accueil');
@@ -1373,6 +1409,73 @@ document.addEventListener('change', (e) => {
 document.addEventListener('visibilitychange', () => { if (document.hidden) player.save(); });
 window.addEventListener('pagehide', () => player.save());
 
+// ============================================================ Thème & fond d'écran
+function theme() { return document.documentElement.dataset.theme === 'classic' ? 'classic' : 'sage'; }
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('hikaku-theme', t); } catch {}
+  $('meta[name=theme-color]').setAttribute('content', t === 'sage' ? '#040a16' : '#0b0b10');
+  toast(t === 'sage' ? 'Thème Sage activé' : 'Thème Classique activé', false, 'rapport');
+}
+
+let wallUrl = null;
+function applyWallpaper(buf) {
+  if (wallUrl) URL.revokeObjectURL(wallUrl);
+  wallUrl = buf ? URL.createObjectURL(new Blob([buf], { type: 'image/jpeg' })) : null;
+  $('#wall').style.backgroundImage = wallUrl ? `url("${wallUrl}")` : '';
+  document.body.classList.toggle('has-wall', !!wallUrl);
+  S.hasWall = !!wallUrl;
+}
+
+const wallInput = document.createElement('input');
+wallInput.type = 'file';
+wallInput.accept = 'image/*';
+wallInput.id = 'wall-input';
+wallInput.hidden = true;
+document.body.appendChild(wallInput);
+wallInput.addEventListener('change', async () => {
+  const f = wallInput.files?.[0];
+  wallInput.value = '';
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.naturalWidth * k);
+    c.height = Math.round(img.naturalHeight * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const b = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85));
+    const buf = await b.arrayBuffer();
+    await db.put('kv', buf, 'wallpaper');
+    applyWallpaper(buf);
+    render();
+    toast('Fond d’écran appliqué', false, 'rapport');
+  } catch {
+    toast('Image illisible', false, 'alerte');
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+});
+
+// Cercles magiques autour de la pochette (thème Sage)
+(() => {
+  const ticks = Array.from({ length: 36 }, (_, i) => i % 3
+    ? `<path transform="rotate(${i * 10} 100 100)" d="M100 4.5v4"/>`
+    : `<path class="fill" transform="rotate(${i * 10} 100 100)" d="M100 3l2.4 3.6L100 10.2l-2.4-3.6z"/>`).join('');
+  const glyphs = Array.from({ length: 8 }, (_, i) =>
+    `<path transform="rotate(${i * 45 + 22.5} 100 100)" d="M96 17h8M100 14v6M97.5 20.5l5-5"/>`).join('');
+  const sq = 'M100 24L176 100L100 176L24 100Z M153.7 46.3V153.7H46.3V46.3Z';
+  const dots = [[100, 24], [176, 100], [100, 176], [24, 100], [153.7, 46.3], [153.7, 153.7], [46.3, 153.7], [46.3, 46.3]]
+    .map(([x, y]) => `<circle class="fill" cx="${x}" cy="${y}" r="2.2"/>`).join('');
+  $('#np-orb').insertAdjacentHTML('afterbegin',
+    `<svg class="ring ring-c" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="99" stroke-dasharray="0.6 5"/></svg>` +
+    `<svg class="ring ring-a" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="96"/><circle cx="100" cy="100" r="90" stroke-dasharray="1.2 3"/><circle cx="100" cy="100" r="86"/>${ticks}${glyphs}</svg>` +
+    `<svg class="ring ring-b" viewBox="0 0 200 200" aria-hidden="true"><path d="${sq}"/><circle cx="100" cy="100" r="76"/>${dots}</svg>`);
+})();
+
 // ============================================================ Démarrage
 async function boot() {
   try {
@@ -1380,6 +1483,7 @@ async function boot() {
       db.getAll('tracks'), db.entries('covers'), db.getAll('playlists'),
       db.get('kv', 'radioFavs'), db.get('kv', 'radioRecent'), db.get('kv', 'ui'), db.get('kv', 'player'),
     ]);
+    db.get('kv', 'wallpaper').then((w) => w && applyWallpaper(w)).catch(() => {});
     for (const t of tracks) S.tracks.set(t.id, t);
     for (const [k, buf] of covers) S.covers.set(k, URL.createObjectURL(new Blob([buf], { type: 'image/jpeg' })));
     S.playlists = playlists || [];
@@ -1390,11 +1494,19 @@ async function boot() {
     render(false);
     player.restore(pstate);
     renderPlayer();
+    hideSplash();
   } catch (e) {
     console.error(e);
+    hideSplash();
     $('#view').innerHTML = `<div class="empty"><h2>Oups</h2><p>Impossible d’ouvrir le stockage de l’appli. Si tu es en navigation privée, ouvre Hikaku dans un onglet normal.</p></div>`;
   }
 }
+const bootAt = performance.now();
+function hideSplash() {
+  const sp = $('#splash');
+  setTimeout(() => sp.classList.add('hide'), Math.max(0, 1100 - (performance.now() - bootAt)));
+}
+$('#splash').addEventListener('click', () => $('#splash').classList.add('hide'));
 boot();
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {

@@ -7,12 +7,20 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Hikaku">
-  <meta name="theme-color" content="#0b0b10">
+  <meta name="theme-color" content="#040a16">
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('hikaku-theme') || 'sage'; }
+    catch (e) { document.documentElement.dataset.theme = 'sage'; }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap">
   <meta name="description" content="Lecteur de musique MP3 et radio, avec lecture en arrière-plan.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/sage.css">
   <title>Hikaku</title>
 </head>
 <body>
@@ -56,6 +64,12 @@
     <symbol id="i-share" viewBox="0 0 24 24"><path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6a2 2 0 01-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3a2 2 0 012 2z"/></symbol>
   </svg>
 
+  <div id="wall" aria-hidden="true"></div>
+  <div id="splash" aria-hidden="true">
+    <div class="splash-orb"></div>
+    <div class="splash-text"><div>« Avis » Initialisation du système…</div><div>« Rapport » Prêt.</div></div>
+  </div>
+
   <main id="view"></main>
 
   <div id="mini" data-action="np-open" hidden>
@@ -83,7 +97,7 @@
       <div class="np-src" id="np-src"></div>
       <button class="ib" data-action="np-menu" aria-label="Options"><svg class="i"><use href="#i-more"/></svg></button>
     </header>
-    <div class="np-art" id="np-art"></div>
+    <div class="np-art" id="np-art"><div class="np-orb" id="np-orb"><div class="np-cover" id="np-cover"></div></div></div>
     <div class="np-info">
       <div class="np-titles">
         <div class="np-title" id="np-title"></div>

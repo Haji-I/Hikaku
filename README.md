@@ -16,6 +16,8 @@ avec **lecture en arrière-plan** et contrôles sur l’écran verrouillé.
 - **Paroles** (lues dans le MP3 ou collées à la main), modification des infos d’un titre.
 - **Radio** : stations populaires par pays, par genre, recherche, favoris, ajout d’un flux perso.
 - Recherche dans toute la bibliothèque, fonctionne hors-ligne.
+- **Deux thèmes** (Réglages → Apparence) : *Sage* (interface holographique bleue, cercles magiques,
+  messages système « Avis / Rapport ») ou *Classique*, plus un **fond d’écran perso** au choix.
 
 Tout reste sur le téléphone : rien n’est envoyé sur Internet (sauf la recherche de radios).
 

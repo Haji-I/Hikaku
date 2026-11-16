@@ -203,7 +203,10 @@ body.radio #mini .prog { display: none; }
 .np-head { display: flex; align-items: center; gap: 4px; min-height: 48px; margin: 0 -10px; }
 .np-src { flex: 1; text-align: center; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: rgba(255, 255, 255, .75); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .np-art { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
-.np-art > * { width: min(100%, 46vh); height: auto; aspect-ratio: 1; }
+.np-orb { position: relative; width: min(100%, 46vh); aspect-ratio: 1; }
+.np-cover { position: absolute; inset: 0; }
+.np-cover > * { width: 100%; height: 100%; }
+.np-orb .ring { display: none; }
 .np-art .cv.logo { padding: 18%; }
 .np-info { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
 .np-titles { flex: 1; min-width: 0; }
@@ -315,3 +318,16 @@ body.np-open #toast.show, #toast.show { opacity: 1; transform: translate(-50%, 0
   #mini { max-width: 744px; margin: 0 auto; }
   .sheet { max-width: 560px; width: 100%; margin: 0 auto; }
 }
+
+/* ---------- Fond d'écran perso, écran de démarrage, éléments propres au thème Sage */
+#wall { position: fixed; inset: 0; z-index: -1; background: center / cover no-repeat; opacity: 0; transition: opacity .4s; pointer-events: none; }
+#wall::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, .25), rgba(0, 0, 0, .7)); }
+body.has-wall { background: transparent; }
+body.has-wall #wall { opacity: .38; }
+#splash, .sys-line, .toast-tag { display: none; }
+.theme-pick { display: flex; gap: 10px; margin: 6px 0 14px; }
+.theme-pick button { flex: 1; border-radius: 12px; padding: 12px; border: 1px solid var(--line); background: var(--bg2); text-align: left; }
+.theme-pick button.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.theme-pick .sw { display: block; height: 34px; border-radius: 8px; margin-bottom: 8px; }
+.theme-pick b { display: block; font-size: 15px; }
+.theme-pick small { color: var(--muted); font-size: 12px; }
